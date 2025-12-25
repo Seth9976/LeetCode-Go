@@ -1,35 +1,37 @@
-name: Deploy《LeetCode-Cookbook》
+name: Deploy to GitHub Pages
 
 on:
   push:
     branches:
-      - master  # 只在master上push触发部署
-      - add_hugo
-    paths-ignore:   # 下列文件的变更不触发部署，可以自行添加
-      - README.md
-      - LICENSE
+      - master  # 检查你的默认分支是 master 还是 main，请在此处修改
+  workflow_dispatch:
 
 jobs:
   deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # 赋予写入权限以便推送到 gh-pages 分支
 
-    runs-on: ubuntu-latest   # 使用ubuntu系统镜像运行自动化脚本
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: true  # 如果项目包含子模块，设为 true
+          fetch-depth: 0
 
-    steps:  # 自动化步骤
-    - uses: actions/checkout@v2   # 第一步，下载代码仓库
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: 'latest'
+          extended: true  # 使用扩展版 Hugo (支持 SCSS)
 
-    - name: Setup Hugo  # 第二步，安装 hugo
-      uses: peaceiris/actions-hugo@v2
-      with:
-        hugo-version: '0.74.3'
+      - name: Build
+        working-directory: ./website  # 关键：指定 Hugo 所在的子目录
+        run: hugo --minify
 
-    - name: Build  # 第三步，编译 hugo
-      run: |
-        cd ./website
-        hugo -D --minify
-
-    - name: Deploy to GitHub Pages  
-      uses: peaceiris/actions-gh-pages@v3  
-      with:  
-        github_token: ${{ secrets.GITHUB_TOKEN }}  
-        publish_dir: ./website/public  
-        publish_branch: gh-pages
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./website/public  # Hugo 生成的静态文件目录
+          publish_branch: gh-pages  # 推送到的分支
