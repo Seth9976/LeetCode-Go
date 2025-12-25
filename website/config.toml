@@ -142,11 +142,11 @@ disablePathToLower = true
   BookTranslatedOnly = false
 
 [params.gitalk] 
-    clientID = "75d9d747f200c623a0e6" # Your client ID
-    clientSecret = "e3cc2ff8d8f6ae3c894a827f226188de0d26f37e" # Your client secret
-    repo = "S2" # The repo to store comments
-    owner = "halfrost" # Your GitHub ID
-    admin= "halfrost" # Required. Github repository owner and collaborators. (Users who having write access to this repository)
+    clientID = "Ov23liQ7Jzdj5dJbiEid" # Your client ID
+    clientSecret = "8ef647dd6a8b302500a4fed175980794240b46c4" # Your client secret
+    repo = "LeetCode-Go" # The repo to store comments
+    owner = "Seth9976" # Your GitHub ID
+    admin= "Seth9976" # Required. Github repository owner and collaborators. (Users who having write access to this repository)
     id= "location.pathname" # The unique id of the page.
     labels= "gitalk" # Github issue labels. If you used to use Gitment, you can change it
     body= "location.href" # GitHub issue body.
