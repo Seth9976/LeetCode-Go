@@ -1,4 +1,4 @@
-baseURL = "https://books.halfrost.com/leetcode"
+baseURL = "https://Seth9976.github.io/LeetCode-Go/"
 languageCode = "en-us"
 title = "LeetCode Cookbook"
 theme = "book"
