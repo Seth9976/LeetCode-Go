@@ -1,35 +1,54 @@
-<!DOCTYPE html>
-<html lang="{{ .Site.Language.Lang }}">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="{{ default .Summary .Description }}">
+<meta name="theme-color" content="#FFFFFF">
 
-  <head>
-    {{ partial "docs/html-head" . }}
-    {{ partial "docs/inject/head" . }}
+{{- template "_internal/opengraph.html" . -}}
 
-    <style>
-      .not-found {
-        text-align: center;
-      }
-      .not-found h1 {
-        margin: .25em 0 0 0;
-        opacity: .25;
-        font-size: 40vmin;
-      }
-    </style>
-  </head>
+<title>{{ partial "docs/title" . }} | {{ .Site.Title -}}</title>
 
-  <body>
-    <main class="flex justify-center not-found">
-      <div>
-        <h1>404</h1>
-        <h2>Page Not Found</h2>
-        <h3>
-          <a href="{{ .Site.Home.RelPermalink }}">{{ .Site.Title }}</a>
-        </h3>
-      </div>
-    </main>
+{{- $manifest := resources.Get "manifest.json" | resources.ExecuteAsTemplate "manifest.json" . }}
+<link rel="manifest" href="{{ $manifest.RelPermalink }}">
+<link rel="icon" href="{{ "favicon.png" | relURL }}" type="image/x-icon">
 
-    {{ partial "docs/inject/body" . }}
-    {{ template "_internal/google_analytics_async.html" . }}
-  </body>
+{{- range .Translations }}
+<link rel="alternate" hreflang="{{ .Language.Lang }}" href="{{ .Permalink }}" title="{{ partial "docs/title" . }}">
+{{ end -}}
 
-  </html>
+{{- $styles := resources.Get "book.scss" | resources.ExecuteAsTemplate "book.scss" . | resources.ToCSS | resources.Minify | resources.Fingerprint }}
+<link rel="stylesheet" href="{{ $styles.RelPermalink }}" integrity="{{ $styles.Data.Integrity }}">
+
+{{- if default true .Site.Params.BookSearch }}
+{{- $searchJSFile := printf "%s.search.js" .Language.Lang }}
+{{- $searchJS := resources.Get "search.js" | resources.ExecuteAsTemplate $searchJSFile . | resources.Minify | resources.Fingerprint }}
+<script defer src="{{ $searchJS.RelPermalink }}" integrity="{{ $searchJS.Data.Integrity }}"></script>
+{{ end -}}
+
+{{- if .Site.Params.BookServiceWorker }}
+{{- $swJS := resources.Get "serviceworker-v1.js" | resources.Minify | resources.Fingerprint }}
+<script async>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register("{{ $swJS.RelPermalink }}").then(function() {
+          if (navigator.serviceWorker.controller) {
+            console.log('Assets cached by the controlling service worker.');
+          } else {
+            console.log('Please reload this page to allow the service worker to handle network operations.');
+          }
+      }).catch(function(error) {
+          console.log('ERROR: ' + error);
+        });
+    } else {
+      console.log('Service workers are not supported in the current browser.');
+    }
+</script>
+{{ end -}}
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+{{- template "_internal/google_analytics.html" . -}}
+
+{{- with .OutputFormats.Get "rss" -}}
+  {{ printf `<link rel="%s" type="%s" href="%s" title="%s" />` .Rel .MediaType.Type .Permalink $.Site.Title | safeHTML }}
+{{ end -}}
+
+{{ "" | safeHTML }}
