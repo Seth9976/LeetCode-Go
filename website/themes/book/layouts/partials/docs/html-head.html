@@ -15,7 +15,6 @@
 <link rel="alternate" hreflang="{{ .Language.Lang }}" href="{{ .Permalink }}" title="{{ partial "docs/title" . }}">
 {{ end -}}
 
-<!-- Theme stylesheet, you can customize scss by creating `assets/custom.scss` in your website -->
 {{- $styles := resources.Get "book.scss" | resources.ExecuteAsTemplate "book.scss" . | resources.ToCSS | resources.Minify | resources.Fingerprint }}
 <link rel="stylesheet" href="{{ $styles.RelPermalink }}" integrity="{{ $styles.Data.Integrity }}">
 
@@ -26,8 +25,6 @@
 {{ end -}}
 
 {{- if .Site.Params.BookServiceWorker }}
-<!-- {{- $swJS := resources.Get "sw-register.js" | resources.ExecuteAsTemplate "sw.js" . | resources.Minify | resources.Fingerprint }}
-<script defer src="{{ $swJS.RelPermalink }}" integrity="{{ $swJS.Data.Integrity }}"></script> -->
 {{- $swJS := resources.Get "serviceworker-v1.js" | resources.Minify | resources.Fingerprint }}
 <script async>
     if ('serviceWorker' in navigator) {
@@ -40,21 +37,18 @@
       }).catch(function(error) {
           console.log('ERROR: ' + error);
         });
-  } else {
+    } else {
       console.log('Service workers are not supported in the current browser.');
-  }
+    }
 </script>
 {{ end -}}
 
 <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-{{- template "_internal/google_analytics_async.html" . -}}
 
-<!-- RSS -->
+{{- template "_internal/google_analytics.html" . -}}
+
 {{- with .OutputFormats.Get "rss" -}}
   {{ printf `<link rel="%s" type="%s" href="%s" title="%s" />` .Rel .MediaType.Type .Permalink $.Site.Title | safeHTML }}
 {{ end -}}
 
-{{ "<!--" | safeHTML }}
-Made with Book Theme
-https://github.com/alex-shpak/hugo-book
-{{ "-->" | safeHTML }}
+{{ "" | safeHTML }}
